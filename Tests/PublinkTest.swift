@@ -7,7 +7,7 @@ import Publinks
 import XCTest
 
 class Publisher {
-    let publink = Publink<Publisher, String>()
+    let publink = Publink<Publisher>()
     var val = 0
 }
 

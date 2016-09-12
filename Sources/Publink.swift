@@ -5,14 +5,26 @@
 
 import Foundation
 
-public class Publink<MessageType, ChannelType>
-    where ChannelType: Hashable
-{
+// TODO:
+//   Ideally this would be generic over ChannelType, rather than assuming String.
+//   Unfortunately, this doesn't seem to be valid syntax:
+//
+//        class Publink<MessageType, ChannelType = String> {
+//            ...
+//        }
+//
+//   Attempting to provide a partial implementation of the type parameters:
+//
+//       <T> -> Publink<T, String>
+//
+//   yields a compiler error: "cannot explicitly specialize a generic function"
+
+public class Publink<MessageType>{
     
     public typealias CallbackType = (MessageType) -> ()
     
     private var subscribers: [CallbackType] = []
-    private var channelers: [ChannelType: [CallbackType]] = [:]
+    private var channelers: [String: [CallbackType]] = [:]
     
     ///
     
@@ -29,7 +41,7 @@ public class Publink<MessageType, ChannelType>
         }
     }
     
-    public func subscribe(to channel: ChannelType, _ callback: CallbackType) {
+    public func subscribe(to channel: String, _ callback: CallbackType) {
         subscribe(callback)
         if channelers[channel] == nil {
             channelers[channel] = [callback]
@@ -38,7 +50,7 @@ public class Publink<MessageType, ChannelType>
         }
     }
     
-    public func publish(_ message: MessageType, on channel: ChannelType, only: Bool = false) {
+    public func publish(_ message: MessageType, on channel: String, only: Bool = false) {
         if !only {
             publish(message)
         }
